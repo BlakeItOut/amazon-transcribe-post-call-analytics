@@ -54,45 +54,45 @@ async function createRecord(record) {
     console.log("Parsed:", parsed);
 
     const jobInfo =
-      parsed.ConversationAnalytics.SourceInformation[0].TranscribeJobInfo;
+      parsed.ConversationAnalytics?.SourceInformation[0]?.TranscribeJobInfo;
 
     let timestamp = new Date(
-      parsed.ConversationAnalytics.ConversationTime
+      parsed.ConversationAnalytics?.ConversationTime
     ).getTime();
     console.log("Timestamp:", timestamp);
 
     const defaultId = "spk_1";
     const callerId =
-      parsed.ConversationAnalytics.SpeakerLabels.find(
+      parsed.ConversationAnalytics?.SpeakerLabels?.find(
         (labelObj) => labelObj.DisplayText === "Customer"
-      ).Speaker || defaultId;
+      )?.Speaker || defaultId;
 
     let dataJson = {
         key: key,
         jobName: jobInfo.TranscriptionJobName,
         confidence: jobInfo.AverageWordConfidence,
-        lang: parsed.ConversationAnalytics.LanguageCode,
-        duration:parsed.ConversationAnalytics.Duration,
+        lang: parsed.ConversationAnalytics?.LanguageCode,
+        duration:parsed.ConversationAnalytics?.Duration,
             // parsed.SpeechSegments[parsed.SpeechSegments.length - 1].SegmentEndTime,
         timestamp: timestamp,
-        location: parsed.ConversationAnalytics.ConversationLocation,
+        location: parsed.ConversationAnalytics?.ConversationLocation,
         callerSentimentScore:
-            parsed.ConversationAnalytics.SentimentTrends[callerId].SentimentScore,
+            parsed.ConversationAnalytics?.SentimentTrends[callerId]?.SentimentScore,
         callerSentimentChange:
-            parsed.ConversationAnalytics.SentimentTrends[callerId].SentimentChange,
-        agent: parsed.ConversationAnalytics.Agent,
-        customer: parsed.ConversationAnalytics.Cust,
-        guid: parsed.ConversationAnalytics.GUID,
+            parsed.ConversationAnalytics?.SentimentTrends[callerId]?.SentimentChange,
+        agent: parsed.ConversationAnalytics?.Agent,
+        customer: parsed.ConversationAnalytics?.Cust,
+        guid: parsed.ConversationAnalytics?.GUID,
     };
 
     
-    if (parsed.ConversationAnalytics.Summary !== undefined) {
-        if (typeof parsed.ConversationAnalytics.Summary === 'string' || parsed.ConversationAnalytics.Summary instanceof String)
+    if (parsed.ConversationAnalytics?.Summary !== undefined) {
+        if (typeof parsed.ConversationAnalytics?.Summary === 'string' || parsed.ConversationAnalytics?.Summary instanceof String)
         {
-            dataJson["summary"] = parsed.ConversationAnalytics.Summary;
+            dataJson["summary"] = parsed.ConversationAnalytics?.Summary;
         }
         else {
-            for (const [key, value] of Object.entries(parsed.ConversationAnalytics.Summary)) {
+            for (const [key, value] of Object.entries(parsed.ConversationAnalytics?.Summary)) {
                 console.log(`${key}: ${value}`);
                 dataJson['summary_' + key.toLowerCase().replace(' ','_')] = value;
             }
@@ -114,7 +114,7 @@ async function createRecord(record) {
     let items = [makeItem(callId, "call", timestamp, data)];
 
     // Sentiment entries
-    const sentiments = parsed.ConversationAnalytics.SentimentTrends;
+    const sentiments = parsed.ConversationAnalytics?.SentimentTrends;
 
     Object.entries(sentiments).map(([k, v]) => {
       items.push(
@@ -135,7 +135,7 @@ async function createRecord(record) {
 
 
     // Entities
-    parsed.ConversationAnalytics.CustomEntities.forEach((entity) => {
+    parsed.ConversationAnalytics?.CustomEntities?.forEach((entity) => {
         entity.Values.forEach((value) => {
             const entityId = `entity#${value}`;
 
@@ -148,7 +148,7 @@ async function createRecord(record) {
     });
 
     // Language
-    const language = parsed.ConversationAnalytics.LanguageCode;
+    const language = parsed.ConversationAnalytics?.LanguageCode;
     const languageId = `language#${language}`;
 
     // Language record
