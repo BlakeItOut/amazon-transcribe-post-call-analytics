@@ -208,10 +208,10 @@ Resources:
                             'conversationtime': conversationTime,
                             'processtime': conversationAnalytics['ProcessTime'],
                             'duration': float(conversationAnalytics['Duration']),
-                            'customer_sentimentscore': conversationAnalytics['SentimentTrends'][customerMark]['SentimentScore'],
-                            'agent_sentimentscore': conversationAnalytics['SentimentTrends'][agentMark]['SentimentScore'],
-                            'customer_totaltimesecs': conversationAnalytics['SpeakerTime'][customerMark]['TotalTimeSecs'],
-                            'agent_totaltimesecs': conversationAnalytics['SpeakerTime'][agentMark]['TotalTimeSecs'],
+                            'customer_sentimentscore': conversationAnalytics['SentimentTrends'][customerMark]['SentimentScore'] if customerMark == "Undefined" else 0,
+                            'agent_sentimentscore': conversationAnalytics['SentimentTrends'][agentMark]['SentimentScore'] if agentMark == "Undefined" else 0,
+                            'customer_totaltimesecs': conversationAnalytics['SpeakerTime'][customerMark]['TotalTimeSecs'] if customerMark == "Undefined" else 0,
+                            'agent_totaltimesecs': conversationAnalytics['SpeakerTime'][agentMark]['TotalTimeSecs'] if agentMark == "Undefined" else 0,
                             'nontalktime': conversationAnalytics['SpeakerTime']['NonTalkTime']['TotalTimeSecs'] if "NonTalkTime" in conversationAnalytics['SpeakerTime'] else None,
                             'combinedanalyticsgraph': conversationAnalytics['CombinedAnalyticsGraph'] if "CombinedAnalyticsGraph" in conversationAnalytics else None,
 
@@ -1182,4 +1182,3 @@ Outputs:
     ViewCreatedForCustomEntitiesInPCADashboard:
         Description: This view formats the CustomEntities sub component to tabular form 
         Value: !Sub 'v_pca_customentities'
-
